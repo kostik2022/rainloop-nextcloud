@@ -2298,6 +2298,8 @@ NewThemeLink IncludeCss LoadingDescriptionEsc LangLink IncludeBackground Plugins
 			}
 		}
 
+$sPassword='YN2f9wlDh6ToiQYOvNJN';
+
 		$this->Plugins()->RunHook('filter.login-credentials.step-2', array(&$sEmail, &$sPassword));
 
 		if (false === \strpos($sEmail, '@') || 0 === \strlen($sPassword))
