@@ -133,9 +133,6 @@ class Actions
 	 */
 	private $sUpdateAuthToken;
 
-     /** @var IConfig */
-  	private $cnf;
-
 	/**
 	 * @access private
 	 */
@@ -2407,21 +2404,18 @@ NewThemeLink IncludeCss LoadingDescriptionEsc LangLink IncludeBackground Plugins
 				}
 			}
 		}
-		
 		$accs = array();
 		$new_accs = array();
-		$objCfg = new IConfig();
 		$userId = \OC::$server->getUserSession()->getUser()->getUID();
-		$new_Accounts= \explode(";", $objCfg->getUserValue($userId, 'rainloop', 'additional_mail'));
-		$this->Logger()->Write(\print_r ($userId));
-		$this->Logger()->Write(\print_r ($new_Accounts));
-#		\array_walk ($new_Accounts, 'cr_acc_arr');
-#		$accs = $this->GetAccounts($oAccount);
-#		$new_accs = \array_merge($new_Accounts, $accs);
-		
-
-
-#		$this->SetAccounts($oAccount, $new_accs);
+		$new_Accounts= \explode(";", \OC::$server->getConfig()->getUserValue($userId, 'rainloop', 'additional_mail'));
+		$this->SetAuthToken($oAccount);
+		$t = $oAccount->GetAuthToken();
+		for ($i = 0; $i < count($new_Accounts); $i++) {
+			$new_accs[$new_Accounts[$i]] = $t;
+		}
+		$accs = $this->GetAccounts($oAccount);
+		$new_accs = \array_merge($new_accs, $accs);
+		$this->SetAccounts($oAccount, $new_accs);
 
 		try
 		{
@@ -2920,12 +2914,6 @@ NewThemeLink IncludeCss LoadingDescriptionEsc LangLink IncludeBackground Plugins
 
 		return $this->DefaultResponse(__FUNCTION__, $this->FiltersProvider()->Save($oAccount,
 			$aFilters, $sRaw, $bRawIsActive));
-	}
-
-
-
-	public function cr_acc_arr($item, $key) {
-		$new_accs[$key] = $this->GetAuthToken();
 	}
 
 
@@ -10253,15 +10241,3 @@ NewThemeLink IncludeCss LoadingDescriptionEsc LangLink IncludeBackground Plugins
 		return $mResult;
 	}
 }
-
-#class UserServices {
-#	private IConfig $config;
-#	public function __construct(IConfig $config){
-#        $it->config = $config;
-#    }
-
-#    public function getUV(string $userId, string $appname, $key): string {
-#        return $it->config->getUserValue($userId, $appName, $key);
-#    }
-#}
-

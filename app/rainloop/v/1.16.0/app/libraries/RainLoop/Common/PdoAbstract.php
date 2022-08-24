@@ -22,7 +22,7 @@ abstract class PdoAbstract
 	/**
 	 * @var \MailSo\Log\Logger
 	 */
-	protected $oLogger;
+	private $oLogger;
 
 	/**
 	 * @var string
