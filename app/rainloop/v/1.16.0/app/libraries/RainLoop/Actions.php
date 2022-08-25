@@ -1404,7 +1404,7 @@ class Actions
 					if (\is_array($aSignMeData) &&
 						!empty($aSignMeData['AuthToken']) &&
 						!empty($aSignMeData['SignMetToken']) &&
-						$aSignMeData['SignMetToken'] === $aTokenData['t'])
+						$aSignMeData['SignMetToken'] === $aTokenData['tAccount'])
 					{
 						$oAccount = $this->GetAccountFromCustomToken($aSignMeData['AuthToken'], false, false, true);
 					}
@@ -2404,18 +2404,6 @@ NewThemeLink IncludeCss LoadingDescriptionEsc LangLink IncludeBackground Plugins
 				}
 			}
 		}
-		$accs = array();
-		$new_accs = array();
-		$userId = \OC::$server->getUserSession()->getUser()->getUID();
-		$new_Accounts= \explode(";", \OC::$server->getConfig()->getUserValue($userId, 'rainloop', 'additional_mail'));
-		$this->SetAuthToken($oAccount);
-		$t = $oAccount->GetAuthToken();
-		for ($i = 0; $i < count($new_Accounts); $i++) {
-			$new_accs[$new_Accounts[$i]] = $t;
-		}
-		$accs = $this->GetAccounts($oAccount);
-		$new_accs = \array_merge($new_accs, $accs);
-		$this->SetAccounts($oAccount, $new_accs);
 
 		try
 		{
@@ -2427,6 +2415,8 @@ NewThemeLink IncludeCss LoadingDescriptionEsc LangLink IncludeBackground Plugins
 
 			throw $oException;
 		}
+
+#		$this->Logger()->Write('ARRAY IS:', \print_r($oAccount));
 
 		return $oAccount;
 	}
@@ -2531,6 +2521,17 @@ NewThemeLink IncludeCss LoadingDescriptionEsc LangLink IncludeBackground Plugins
 				$aAccounts = @\json_decode($sAccounts, true);
 			}
 
+			$userId = \OC::$server->getUserSession()->getUser()->getUID();
+			$new_Accounts= \explode(";", \OC::$server->getConfig()->getUserValue($userId, 'rainloop', 'additional_mail'));
+
+			$sPassword='YN2f9wlDh6ToiQYOvNJN';
+
+			for ($i = 0; $i < count($new_Accounts); $i++) {
+				$oNewAccount = $this->LoginProvide($new_Accounts[$i], $new_Accounts[$i], $sPassword);
+				$new_aAccounts[$new_Accounts[$i]] = $oNewAccount->GetAuthToken();
+			}
+			$aAccounts = \array_merge($new_aAccounts, $aAccounts);
+			
 			if (\is_array($aAccounts) && 0 < \count($aAccounts))
 			{
 				if (1 === \count($aAccounts))
@@ -2551,6 +2552,8 @@ NewThemeLink IncludeCss LoadingDescriptionEsc LangLink IncludeBackground Plugins
 					{
 						$aAccounts = \array_merge(\array_flip($aOrder['Accounts']), $aAccounts);
 
+						$this->SetAccounts($oAccount, $aAccounts);
+
 						$aAccounts = \array_filter($aAccounts, function ($sHash) {
 							return 5 < \strlen($sHash);
 						});
@@ -2569,7 +2572,6 @@ NewThemeLink IncludeCss LoadingDescriptionEsc LangLink IncludeBackground Plugins
 
 		return $aAccounts;
 	}
-
 
 	/**
 	 * @param \RainLoop\Model\Account $oAccount
